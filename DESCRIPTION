@@ -1,8 +1,18 @@
 Package: dataQC
-Title: What the Package Does (one line, title case)
+Title: An R package to facilitate data quality control.
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.2.2)
-License: What license is it under?
-LazyData: true
+Authors@R: person("Chris", "McConnell", email = "cris.mcc76@gmail.com",
+  role = c("aut", "cre"))
+Description: Collection of functions to manually identify, flag and apply
+    corrections to data.
+License: GPL-3
+LazyData: TRUE
+Depends:
+    R (>= 3.1.1),
+    RODBC (>= 1.3-10)
+Imports:
+    lubridate (>= 1.3.3),
+    shiny (>= 0.13.0),
+    miniUI (>= 0.1.1),
+    ggplot2 (>= 2.0.0)
+RoxygenNote: 5.0.1
