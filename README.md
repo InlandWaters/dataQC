@@ -1,5 +1,10 @@
 # dataQC
 
+```R
+# install.packages("devtools")
+devtools::install_github("D-ESC/dataQC")
+```
+
 Some simple and hopefully robust ways to deal with detecting and possibly removing errors and inconsistencies from data.
 
 ```R
@@ -13,6 +18,7 @@ Data = data.frame(dates, value = sin(decimal_date(dates)/0.01) + rnorm(length(da
 Interact with data by zooming in on certain regions of a scatterplot and highlighting values to be returned to the console. 
 
 ```R
+library(dataQC)
 Data = brushed(Data, "dates", "value")
 ```
 
