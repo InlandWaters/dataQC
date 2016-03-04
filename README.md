@@ -29,7 +29,7 @@ Data = Data %>%
   mutate(value = ifelse(selected_ == TRUE, NA, value)) %>%
   mutate(flag = ifelse(selected_ == TRUE, 'missing', flag))
 ```
-## impossible values
+## data corrections
 
 Errors from a malfunctioning instrument can be filtered out.
 
@@ -37,6 +37,21 @@ Errors from a malfunctioning instrument can be filtered out.
 Data %>% 
   filter(value < 3 & value > -3)
 ```
+
+Adding a constant value useful for adjusting all or portions of a data series where an incorrect offset was used.
+
+```R
+Data %>% 
+  mutate(value = ifelse(
+    between(dates, ymd("2013-12-01"), ymd("2013-12-31")),  
+    value + 4,
+    value
+    ))
+```
+
+Applying a linear drift correction useful in adjusting a data series that were measured using a sensor that may drift over time. 
+
+
 
 ## “potential outliers”
 
