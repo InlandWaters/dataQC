@@ -11,8 +11,10 @@ Some simple and hopefully robust ways to deal with detecting and possibly removi
 library(lubridate)
 library(dplyr)
 
-dates = as.POSIXct(seq(from = ymd("2013-01-01"), to = ymd("2014-01-01"), by = 3 * 3600))
-Data = data.frame(dates, value = sin(decimal_date(dates)/0.01) + rnorm(length(dates)))
+dates = as.POSIXct(seq(from = ymd("2013-01-01"), to = ymd("2014-01-01"), 
+  by = 3 * 3600))
+Data = data.frame(dates, value = sin(decimal_date(dates)/0.01) +
+  rnorm(length(dates)))
 ```
 
 Interact with data by zooming in on certain regions of a scatterplot and highlighting values to be returned to the console. 
@@ -49,9 +51,22 @@ Data %>%
     ))
 ```
 
-Applying a linear drift correction useful in adjusting a data series that were measured using a sensor that may drift over time. 
+You can also write it as:
 
+```R
+Data %>% 
+  mutate(value = value +
+    between(dates, ymd("2013-12-01"), ymd("2013-12-31")) * 4)
+```
 
+Applying a linear drift correction useful in adjusting a data series that were measured using a sensor that may drift over time.
+
+```R
+Data %>% 
+  mutate(x = between(dates, ymd("2013-12-01"), ymd("2013-12-31"))) %>%
+  mutate(value = 5 / sum(x) * cumsum(x) * x + value) %>%
+  select(-x)
+```
 
 ## “potential outliers”
 
@@ -67,7 +82,7 @@ adjboxStats computes the “statistics” for producing boxplots adjusted for sk
 ```R
 library(robustbase)
 Data %>% 
-  filter(value %in% adjboxStats(value, a=-1,b=5)$out)
+  filter(value %in% adjboxStats(value, a = -1, b = 5)$out)
 ```
 
 Any of the above can be calculated in groups such as year or month.
@@ -103,7 +118,8 @@ Generic function for replacing each NA with aggregated values. This allows imput
 
 ```R
 Data %>% 
-  mutate(value = na.aggregate(value, by = month(dates), FUN = mean, maxgap = 6))
+  mutate(value = na.aggregate(value, by = month(dates), 
+    FUN = mean, maxgap = 6))
 ```
 
 Missing values (NAs) are replaced by linear interpolation via approx.
