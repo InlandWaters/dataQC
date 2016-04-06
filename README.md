@@ -17,11 +17,12 @@ Data = data.frame(dates, value = sin(decimal_date(dates)/0.01) +
   rnorm(length(dates)))
 ```
 
-Interact with data by zooming in on certain regions of a scatterplot and highlighting values to be returned to the console. 
+Interact ggplot objects and data by zooming in on certain regions of a scatterplot and highlighting values to be returned to the console. 
 
 ```R
 library(dataQC)
-Data = brushed(Data, "dates", "value")
+p = ggplot(data = Data, aes(dates, value)) + geom_point()
+Data = brushed(p, allRows = TRUE)
 ```
 
 This returns the original object with an additional column 'selected_' that can be used to flag or update values.
@@ -59,6 +60,15 @@ Data %>%
     between(dates, ymd("2013-12-01"), ymd("2013-12-31")) * 4)
 ```
 
+Or:
+
+```R
+Data %>% 
+  mutate(value = replace(value,
+    between(dates, ymd("2013-12-01"), ymd("2013-12-31")), 
+    value + 4))
+```
+
 Applying a linear drift correction useful in adjusting a data series that were measured using a sensor that may drift over time.
 
 ```R
@@ -70,7 +80,7 @@ Data %>%
 
 ## “potential outliers”
 
-boxplot.stats can list the 'outliers' (points outside +/-1.58 IQR/sqrt(n)). Coefficient that defines the outliers can be changed.
+boxplot.stats can list the 'outliers' (points outside +/-1.58 IQR/sqrt(n)). The coefficient that defines the outliers can be changed.
 
 ```{r}
 Data %>% 

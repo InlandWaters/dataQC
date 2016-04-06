@@ -6,13 +6,17 @@
 #'yvar arguments specify which columns in the data correspond to the x
 #'variable, y variable of the plot. Based on ggbrush by Joe Cheng.
 #'
-#'@param df	A data frame from which to select rows.
-#'@param xvar, yvar	A string with the name of the variable on the x or y axis.
+#'@param plotExpr	A ggplot object.
+#'@param allRows	If FALSE (the default) return a data frame containing the
+#'  selected rows. If TRUE, the input data frame will have a new column,
+#'  selected_, which indicates whether the row was inside the brush (TRUE) or
+#'  outside the brush (FALSE).
 #'
 #'@return A data frame
 #'
 #'@examples
 #'library(lubridate)
+#'library(ggplot2)
 #'
 #'# Example dataset
 #'dates = as.POSIXct(seq(from = ymd("2013-01-01"),
@@ -21,11 +25,12 @@
 #'  rnorm(length(dates)))
 #'
 #'# Select points
-#'brushed(Data, "dates", "value")
+#'p = qplot(data = Data, dates, value)
+#'brushed(p)
 #'
 #'@export
 
-brushed <- function(df, xvar, yvar) {
+brushed <- function(plotExpr, allRows = FALSE) {
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Drag to select points"),
     miniUI::miniContentPanel(
@@ -40,25 +45,18 @@ brushed <- function(df, xvar, yvar) {
 
   server <- function(input, output, session) {
     ranges <- shiny::reactiveValues(x = NULL, y = NULL)
-    output$plot <- renderPlot({
-      ggplot2::ggplot(df, ggplot2::aes_string(xvar, yvar)) +
-        ggplot2::geom_point() +
-        ggplot2::coord_cartesian(xlim = ranges$xvar, ylim = ranges$yvar) +
-        ggplot2::theme_minimal()
-    })
+    # Show the plot... that's important.
+    output$plot <- renderPlot(plotExpr + coord_cartesian(xlim = ranges$xvar, ylim = ranges$yvar))
 
     observeEvent(input$plot_dblclick, {
       brushed <- input$plot_brush
       if (!is.null(brushed)) {
-        if (TRUE %in%  sapply(df , lubridate::is.POSIXct)) {
-          ranges$xvar <-
-            as.POSIXct(c(brushed$xmin, brushed$xmax), origin = "1970-01-01")
-        }
-        else {
-          ranges$xvar <- c(brushed$xmin, brushed$xmax)
-        }
-        ranges$yvar <- c(brushed$ymin, brushed$ymax)
-      }
+        Points <- brushedPoints(plotExpr$data, input$plot_brush)
+        mapX <- as.character(plotExpr$mapping$x)
+        mapY <- as.character(plotExpr$mapping$y)
+        ranges$xvar <- range(Points[[mapX]])
+        ranges$yvar <- range(Points[[mapY]])
+          }
       else {
         ranges$xvar <- NULL
         ranges$yvar <- NULL
@@ -66,7 +64,7 @@ brushed <- function(df, xvar, yvar) {
     })
 
     observeEvent(input$done, {
-      stopApp(brushedPoints(df, input$plot_brush, allRows = TRUE))
+      stopApp(brushedPoints(plotExpr$data, input$plot_brush, allRows = allRows))
     })
   }
 
