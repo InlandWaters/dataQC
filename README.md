@@ -80,14 +80,34 @@ Data %>%
 
 ## “potential outliers”
 
-boxplot.stats can list the 'outliers' (points outside +/-1.58 IQR/sqrt(n)). The coefficient that defines the outliers can be changed.
+from Ron Pearson (http://www.r-bloggers.com/finding-outliers-in-numerical-data/)
+
+Detection of outliers in a sequence of numbers can be approached as a mathematical problem, but the interpretation of these data observations cannot. The terms “outlier” and “bad data” are not synonymous. In a single sequence of numbers, the typical approach to outlier detection is to first determine upper and lower limits on the nominal range of data variation, and then declare any point falling outside this range to be an outlier.
+
+The “three-sigma edit rule,” well known but unreliable.
+
+```{r}
+Data %>% 
+  filter(value > 3 * sd(value) + mean(value) | 
+         value < 3 * -sd(value) + mean(value))
+```
+
+The Hampel identifier, a more reliable procedure based on the median and the MAD scale estimate.
+
+```
+Data %>% 
+  filter(value > 3 * mad(value) + median(value) | 
+         value < 3 * -mad(value) + median(value))
+```
+
+The standard boxplot rule, based on the upper and lower quartiles of the data distribution. boxplot.stats can list the 'outliers' (points outside +/-1.58 IQR/sqrt(n)). The coefficient that defines the outliers can be changed.
 
 ```{r}
 Data %>% 
   filter(value %in% boxplot.stats(value, coef = 1)$out)
 ```
 
-adjboxStats computes the “statistics” for producing boxplots adjusted for skewed distributions. Scaling factors can be set to change outlier boundaries.
+An adjusted boxplot rule, based on the upper and lower quartiles, along with a robust skewness estimator called the medcouple. adjboxStats computes the “statistics” for producing boxplots adjusted for skewed distributions. Scaling factors can be set to change outlier boundaries.
 
 ```R
 library(robustbase)
