@@ -20,6 +20,7 @@ Data = data.frame(dates, value = sin(decimal_date(dates)/0.01) +
 Interact ggplot objects and data by zooming in on certain regions of a scatterplot and highlighting values to be returned to the console. 
 
 ```R
+library(ggplot2)
 library(dataQC)
 p = ggplot(data = Data, aes(dates, value)) + geom_point()
 Data = brushed(p, allRows = TRUE)
