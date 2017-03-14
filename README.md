@@ -5,14 +5,14 @@
 devtools::install_github("D-ESC/dataQC")
 ```
 
-Some simple and hopefully robust ways to deal with detecting and possibly removing errors and inconsistencies from data.
+Some simple and hopefully robust ways to deal with detecting and possibly removing errors and inconsistencies from data. 
 
 ```R
 library(lubridate)
 library(dplyr)
 
 dates = as.POSIXct(seq(from = ymd("2013-01-01"), to = ymd("2014-01-01"), 
-  by = 3 * 3600))
+  by = 1))
 Data = data.frame(dates, value = sin(decimal_date(dates)/0.01) +
   rnorm(length(dates)))
 ```
@@ -101,7 +101,7 @@ Data %>%
          value < 3 * -mad(value) + median(value))
 ```
 
-The standard boxplot rule, based on the upper and lower quartiles of the data distribution. boxplot.stats can list the 'outliers' (points outside +/-1.58 IQR/sqrt(n)). The coefficient that defines the outliers can be changed.
+Tukey’s method, based on the upper and lower quartiles of the data distribution. boxplot.stats can list the 'outliers' (points outside +/-1.58 IQR/sqrt(n)). The coefficient that defines the outliers can be changed.
 
 ```{r}
 Data %>% 
