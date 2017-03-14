@@ -4,12 +4,15 @@
 \alias{brushed}
 \title{Returns a data frame with points marked which are under a brush}
 \usage{
-brushed(df, xvar, yvar)
+brushed(plotExpr, allRows = FALSE)
 }
 \arguments{
-\item{df}{A data frame from which to select rows.}
+\item{plotExpr}{A ggplot object.}
 
-\item{xvar, }{yvar    A string with the name of the variable on the x or y axis.}
+\item{allRows}{If FALSE (the default) return a data frame containing the
+selected rows. If TRUE, the input data frame will have a new column,
+selected_, which indicates whether the row was inside the brush (TRUE) or
+outside the brush (FALSE).}
 }
 \value{
 A data frame
@@ -23,6 +26,7 @@ variable, y variable of the plot. Based on ggbrush by Joe Cheng.
 }
 \examples{
 library(lubridate)
+library(ggplot2)
 
 # Example dataset
 dates = as.POSIXct(seq(from = ymd("2013-01-01"),
@@ -31,7 +35,7 @@ Data = data.frame(dates, value = sin(decimal_date(dates)/0.01) +
  rnorm(length(dates)))
 
 # Select points
-brushed(Data, "dates", "value")
+p = qplot(data = Data, dates, value)
+brushed(p)
 
 }
-
