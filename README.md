@@ -5,7 +5,7 @@
 devtools::install_github("D-ESC/dataQC")
 ```
 
-Some simple and hopefully robust ways to deal with detecting and possibly removing errors and inconsistencies from data. 
+Some simple and hopefully robust ways to deal with detecting and sometimes removing errors and inconsistencies from data. 
 
 ```R
 library(lubridate)
@@ -17,7 +17,7 @@ Data = data.frame(dates, value = sin(decimal_date(dates)/0.01) +
   rnorm(length(dates)))
 ```
 
-Interact ggplot objects and data by zooming in on certain regions of a scatterplot and highlighting values to be returned to the console. 
+There is a simple function in this package that allow you to interact with ggplot by zooming in on certain regions of a scatterplot and highlighting values. 
 
 ```R
 library(ggplot2)
@@ -26,7 +26,7 @@ p = ggplot(data = Data, aes(dates, value)) + geom_point()
 Data = brushed(p, allRows = TRUE)
 ```
 
-This returns the original object with an additional column 'selected_' that can be used to flag or update values.
+This returns the original object with an additional column 'selected_' that can be used to flag or update values.The example below uses the pipe operator and functions available from the dplyr package.
 
 ```R
 Data = Data %>% 
@@ -35,14 +35,14 @@ Data = Data %>%
 ```
 ## data corrections
 
-Errors from a malfunctioning instrument can be filtered out.
+Some simple corrections can include filtering out impossible values. If an instrument is not capable of reading values above 3 or below -3 you could filter out those values using the bit of code below.
 
 ```R
 Data %>% 
   filter(value < 3 & value > -3)
 ```
 
-Adding a constant value useful for adjusting all or portions of a data series where an incorrect offset was used.
+Instrument calibrations usually involve offsets and or slopes. This bit of code uses an ifelse statement to add a constant between two dates, useful for adjusting a portion of a data series where an incorrect offset was used.
 
 ```R
 Data %>% 
@@ -54,14 +54,6 @@ Data %>%
 ```
 
 You can also write it as:
-
-```R
-Data %>% 
-  mutate(value = value +
-    between(dates, ymd("2013-12-01"), ymd("2013-12-31")) * 4)
-```
-
-Or:
 
 ```R
 Data %>% 
@@ -158,4 +150,3 @@ Missing values (NAs) are replaced by linear interpolation via approx.
 ```R
 Data %>% mutate(value = na.approx(value, maxgap = 6))
 ```
-A line I wrote on my local computer  
