@@ -158,3 +158,4 @@ Missing values (NAs) are replaced by linear interpolation via approx.
 ```R
 Data %>% mutate(value = na.approx(value, maxgap = 6))
 ```
+A line I wrote on my local computer  
